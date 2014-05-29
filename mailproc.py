@@ -15,10 +15,11 @@ USERNAME = pwd.getpwuid(os.getuid()).pw_name
 USERRC = os.path.expanduser('~/.mailprocrc')
 MAILBOX = '/var/mail/%s' % USERNAME
 
+
 def default_process(mbox, message):
     mbox.lock()
     mbox.add(message)
-    mbox.close()
+    mbox.flush()
 
 def load_user_rc():
     try:
@@ -30,6 +31,14 @@ def load_user_rc():
 
     else:
         def run(mbox, message):
+
+            RECIPES = []
+            def recipe(test=lambda m: True):
+                def decorator(func):
+                    RECIPES.append((test, func))
+                    return func
+                return decorator
+
             exec code in {
                     # main objects
                     'message': message,
@@ -39,6 +48,7 @@ def load_user_rc():
                     'default_process': default_process,
                     'walk_message': walk_message,
                     'mkdir_p': mkdir_p,
+                    'recipe': recipe,
 
                     # useful modules
                     're': re,
@@ -46,6 +56,13 @@ def load_user_rc():
                     'sys': sys,
                     'subprocess': subprocess,
                     }
+
+            if RECIPES:
+                RECIPES.append((lambda m: True, default_process))
+                for recipe in RECIPES:
+                    if recipe[0](message):
+                        if recipe[1](mbox, message) is not False:
+                            break
 
         return run
 
