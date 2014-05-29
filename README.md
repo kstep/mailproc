@@ -10,7 +10,7 @@ This program replaces it with Python, so you can put email processing rules to `
 The script provides a set of modules (`subprocess`, `os`, `sys`) and variables (`message` and `mbox`
 for current message being processed and current user's mailbox file), as well as helpers
 (`default_process()` function for fallback processing, `mkdir_p()` and `walk_message()`),
-so you can start writing your `~/.mailprocrc` file immediately without a lot of similar code like bunch
+so you can start writing your `~/.mailprocrc` file immediately without a lot of boilerplate code like bunch
 of `import`s in the beggining.
 
 All you have to do is just analyze `message` (an `email.message` object) and act on it, and call
@@ -52,6 +52,20 @@ else:
     default_process(mbox, message)
 
 ```
+
+Or you can use more strict/functional way if you like:
+
+```python
+@recipe(lambda m: m['content-type'].startswith('multipart/mixed'))
+def save_attachments(mbox, message):
+    pass
+    
+@recipe(lambda m: 'download' in m['subject'].lower())
+def download_links_from_email(mbox, message):
+    pass
+```
+
+In the second form you don't have to call `default_process()` manually, it will be called for you if none of your recipes match your message.
 
 Example of opensmptd config (`/etc/smtpd/smtpd.conf`) to use mailproc:
 
