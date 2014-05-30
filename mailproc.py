@@ -46,7 +46,6 @@ def load_user_rc():
 
                     # helpers
                     'default_process': default_process,
-                    'walk_message': walk_message,
                     'mkdir_p': mkdir_p,
                     'recipe': recipe,
 
@@ -66,15 +65,6 @@ def load_user_rc():
 
         return run
 
-
-def walk_message(message):
-    if message.is_multipart():
-        for msg in message.get_payload():
-            for m in walk_message(msg):
-                yield m
-
-    else:
-        yield message
 
 def mkdir_p(dirname):
     try:
