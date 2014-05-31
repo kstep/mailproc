@@ -9,7 +9,7 @@ This program replaces it with Python, so you can put email processing rules to `
 
 The script provides a set of modules (`subprocess`, `os`, `sys`) and variables (`message` and `mbox`
 for current message being processed and current user's mailbox file), as well as helpers
-(`default_process()` function for fallback processing, `mkdir_p()` and `walk_message()`),
+(`default_process()` function for fallback processing),
 so you can start writing your `~/.mailprocrc` file immediately without a lot of boilerplate code like bunch
 of `import`s in the beggining.
 
